@@ -37,7 +37,6 @@ namespace SuperAdventure
             {
                 rtbMessages.Text += "You must have a " + newLocation.ItemRequiredToEnter.Name + " to enter this location." + Environment.NewLine;
                 return;
-                ScrollToBottomOfMessages();
             }
 
             // Update the player's current location
@@ -168,6 +167,8 @@ namespace SuperAdventure
                 btnUsePotion.Visible = false;
             }
 
+            // Refresh player's stats
+            UpdatePlayerStats();
             // Refresh player's inventory list
             UpdateInventoryListInUI();
             // Refresh player's quest list
@@ -176,6 +177,15 @@ namespace SuperAdventure
             UpdateWeaponListInUI();
             // Refresh player's potions combobox
             UpdatePotionListInUI();
+        }
+
+        private void UpdatePlayerStats()
+        {
+            // Refresh player information and inventory controls
+            lblHitPoints.Text = _player.CurrentHitPoints.ToString();
+            lblGold.Text = _player.Gold.ToString();
+            lblExperience.Text = _player.ExperiencePoints.ToString();
+            lblLevel.Text = _player.Level.ToString();
         }
 
         private void UpdateInventoryListInUI()
@@ -346,10 +356,7 @@ namespace SuperAdventure
                     }
                 }
                 // Refresh player information and inventory controls
-                lblHitPoints.Text = _player.CurrentHitPoints.ToString();
-                lblGold.Text = _player.Gold.ToString();
-                lblExperience.Text = _player.ExperiencePoints.ToString();
-                lblLevel.Text = _player.Level.ToString();
+                UpdatePlayerStats();
                 UpdateInventoryListInUI();
                 UpdateWeaponListInUI();
                 UpdatePotionListInUI();
