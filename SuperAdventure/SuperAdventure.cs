@@ -30,8 +30,33 @@ namespace SuperAdventure
             {
                 _player = Player.CreateDefaultPlayer();
             }
+
+            // Refresh player information and inventory controls
+            lblHitPoints.DataBindings.Add("Text", _player, "CurrentHitPoints");
+            lblGold.DataBindings.Add("Text", _player, "Gold");
+            lblExperience.DataBindings.Add("Text", _player, "ExperiencePoints");
+            lblLevel.DataBindings.Add("Text", _player, "Level");
             MoveTo(_player.CurrentLocation);
-            UpdatePlayerStats();
+        }
+
+        private void btnEast_Click(object sender, EventArgs e)
+        {
+            MoveTo(_player.CurrentLocation.LocationToEast);
+        }
+
+        private void btnNorth_Click(object sender, EventArgs e)
+        {
+            MoveTo(_player.CurrentLocation.LocationToNorth);
+        }
+
+        private void btnSouth_Click(object sender, EventArgs e)
+        {
+            MoveTo(_player.CurrentLocation.LocationToSouth);
+        }
+
+        private void btnWest_Click(object sender, EventArgs e)
+        {
+            MoveTo(_player.CurrentLocation.LocationToWest);
         }
 
         private void MoveTo(Location newLocation)
@@ -58,9 +83,6 @@ namespace SuperAdventure
 
             // Completely heal the player
             _player.CurrentHitPoints = _player.MaximumHitPoints;
-
-            // Update Hit Points in UI
-            lblHitPoints.Text = _player.CurrentHitPoints.ToString();
 
             // Does the location have a quest?
             if (newLocation.QuestAvailableHere != null)
@@ -97,7 +119,7 @@ namespace SuperAdventure
                             rtbMessages.Text += Environment.NewLine;
                             ScrollToBottomOfMessages();
 
-                            _player.ExperiencePoints += newLocation.QuestAvailableHere.RewardExperiencePoints;
+                            _player.AddExperiencePoints(newLocation.QuestAvailableHere.RewardExperiencePoints);
                             _player.Gold += newLocation.QuestAvailableHere.RewardGold;
 
                             // Add the reward item to the player's inventory
@@ -171,8 +193,6 @@ namespace SuperAdventure
                 btnUsePotion.Visible = false;
             }
 
-            // Refresh player's stats
-            UpdatePlayerStats();
             // Refresh player's inventory list
             UpdateInventoryListInUI();
             // Refresh player's quest list
@@ -181,15 +201,6 @@ namespace SuperAdventure
             UpdateWeaponListInUI();
             // Refresh player's potions combobox
             UpdatePotionListInUI();
-        }
-
-        private void UpdatePlayerStats()
-        {
-            // Refresh player information and inventory controls
-            lblHitPoints.Text = _player.CurrentHitPoints.ToString();
-            lblGold.Text = _player.Gold.ToString();
-            lblExperience.Text = _player.ExperiencePoints.ToString();
-            lblLevel.Text = _player.Level.ToString();
         }
 
         private void UpdateInventoryListInUI()
@@ -276,12 +287,6 @@ namespace SuperAdventure
             }
         }
 
-        private void ScrollToBottomOfMessages()
-        {
-            rtbMessages.SelectionStart = rtbMessages.Text.Length;
-            rtbMessages.ScrollToCaret();
-        }
-
         private void SuperAdventure_Load(object sender, EventArgs e)
         {
 
@@ -316,7 +321,7 @@ namespace SuperAdventure
                 rtbMessages.Text += "You defeated the " + _currentMonster.Name + Environment.NewLine;
                 ScrollToBottomOfMessages();
                 // Give player experience points for killing the monster
-                _player.ExperiencePoints += _currentMonster.RewardExperiencePoints;
+                _player.AddExperiencePoints(_currentMonster.RewardExperiencePoints);
                 rtbMessages.Text += "You receive " + _currentMonster.RewardExperiencePoints.ToString() + " experience points" + Environment.NewLine;
                 ScrollToBottomOfMessages();
                 // Give player gold for killing the monster 
@@ -359,8 +364,7 @@ namespace SuperAdventure
                         ScrollToBottomOfMessages();
                     }
                 }
-                // Refresh player information and inventory controls
-                UpdatePlayerStats();
+
                 UpdateInventoryListInUI();
                 UpdateWeaponListInUI();
                 UpdatePotionListInUI();
@@ -380,8 +384,6 @@ namespace SuperAdventure
                 ScrollToBottomOfMessages();
                 // Subtract damage from player
                 _player.CurrentHitPoints -= damageToPlayer;
-                // Refresh player data in UI
-                lblHitPoints.Text = _player.CurrentHitPoints.ToString();
                 if (_player.CurrentHitPoints <= 0)
                 {
                     // Display message
@@ -391,16 +393,6 @@ namespace SuperAdventure
                     MoveTo(World.LocationByID(World.LOCATION_ID_HOME));
                 }
             }
-        }
-
-        private void btnEast_Click(object sender, EventArgs e)
-        {
-            MoveTo(_player.CurrentLocation.LocationToEast);
-        }
-
-        private void btnNorth_Click(object sender, EventArgs e)
-        {
-            MoveTo(_player.CurrentLocation.LocationToNorth);
         }
 
         private void btnUsePotion_Click(object sender, EventArgs e)
@@ -442,20 +434,14 @@ namespace SuperAdventure
                 // Move player to "Home"
                 MoveTo(World.LocationByID(World.LOCATION_ID_HOME));
             }
-            // Refresh player data in UI
-            lblHitPoints.Text = _player.CurrentHitPoints.ToString();
             UpdateInventoryListInUI();
             UpdatePotionListInUI();
         }
 
-        private void btnSouth_Click(object sender, EventArgs e)
+        private void ScrollToBottomOfMessages()
         {
-            MoveTo(_player.CurrentLocation.LocationToSouth);
-        }
-
-        private void btnWest_Click(object sender, EventArgs e)
-        {
-            MoveTo(_player.CurrentLocation.LocationToWest);
+            rtbMessages.SelectionStart = rtbMessages.Text.Length;
+            rtbMessages.ScrollToCaret();
         }
 
         private void SuperAdventure_FormClosing(object sender, FormClosingEventArgs e)
